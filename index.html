@@ -33,6 +33,28 @@
       color: var(--brown-dark);
       overflow-x: hidden;
       position: relative;
+      transition: background .4s ease, color .4s ease;
+    }
+
+    /* ---------- โหมดกลางคืน (Dark Mode) ---------- */
+    body.dark {
+      --brown-dark:  #F3E9DD;
+      --brown-mid:   #E0CDBB;
+      --brown-soft:  #B79C86;
+      --cream:       #2A211C;
+      --cream-2:     #382C25;
+      --orange:      #E8873A;
+      --orange-soft: #7A5433;
+      --leaf:        #7A9E7E;
+      background: linear-gradient(160deg, #14100E 0%, #1F1712 55%, #2A211C 100%);
+      color: var(--brown-dark);
+    }
+    body.dark .tagline,
+    body.dark .info-box .label,
+    body.dark .stat-num { color: var(--brown-soft); }
+    body.dark .text-muted { color: var(--brown-soft) !important; }
+    body.dark .fav-box {
+      background: linear-gradient(135deg, #382C25, #2F241E);
     }
 
     /* ---------- ลูกเล่น: หัวใจ & กล้วยลอยพื้นหลัง ---------- */
@@ -74,7 +96,33 @@
       padding: 90px 28px 34px;
       position: relative;
       text-align: center;
+      transition: background .4s ease, border-color .4s ease;
     }
+
+    /* ---------- ปุ่มสลับโหมดมืด ---------- */
+    .theme-toggle {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      width: 44px;
+      height: 44px;
+      border: 2px solid var(--orange-soft);
+      border-radius: 50%;
+      background: var(--cream-2);
+      color: var(--brown-dark);
+      font-size: 1.3rem;
+      line-height: 1;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, .18);
+      transition: transform .25s ease, background .3s ease, border-color .3s ease;
+      z-index: 2;
+    }
+    .theme-toggle:hover { transform: rotate(20deg) scale(1.1); }
+    .theme-toggle:active { transform: scale(.92); }
+    .theme-toggle:focus-visible { outline: 3px solid var(--orange); outline-offset: 2px; }
 
     /* ---------- รูปโปรไฟล์วงกลม ---------- */
     .avatar {
@@ -222,6 +270,10 @@
   <main class="profile-wrap">
     <section class="profile-card">
 
+      <!-- ปุ่มสลับโหมดมืด (มุมขวาบนของการ์ด) -->
+      <button type="button" class="theme-toggle" id="themeToggle"
+              aria-label="สลับโหมดมืด" title="สลับโหมดมืด">🌙</button>
+
       <img src="punch.png" alt="รูปโปรไฟล์น้องพันซ์ ลิงน้อยกำลังกอดตุ๊กตาอุรังอุตัง" class="avatar">
       <br><br>
       <h1 class="name">น้องพั๊นซ์ 🐒</h1>
@@ -325,6 +377,24 @@
   <footer>ทำด้วย 🧡 สำหรับน้องพันซ์</footer>
 
   <script>
+    // ----- สลับโหมดมืด (Dark Mode) -----
+    const toggle = document.getElementById('themeToggle');
+    const applyTheme = (dark) => {
+      document.body.classList.toggle('dark', dark);
+      toggle.textContent = dark ? '☀️' : '🌙';
+      toggle.setAttribute('aria-pressed', dark);
+    };
+    // เริ่มต้นตามค่าที่เคยเลือกไว้ หรือค่าของระบบ
+    const saved = localStorage.getItem('punch-theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    applyTheme(saved ? saved === 'dark' : prefersDark);
+
+    toggle.addEventListener('click', () => {
+      const dark = !document.body.classList.contains('dark');
+      applyTheme(dark);
+      localStorage.setItem('punch-theme', dark ? 'dark' : 'light');
+    });
+
     // ----- คำนวณอายุจากวันเกิด -----
     const birth = new Date(2025, 1, 12); // 12 ก.พ. 2568 (ค.ศ. 2025)
     const now = new Date();
